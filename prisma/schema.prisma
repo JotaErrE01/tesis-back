@@ -1,0 +1,267 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model canton_ce {
+  id                BigInt      @id @default(autoincrement()) @map("id_canton")
+  creation_date     DateTime?   @db.Timestamp(6)
+  creation_user     String?     @db.VarChar(255)
+  modification_date DateTime?   @db.Timestamp(6)
+  modification_user String?     @db.VarChar(255)
+  nombre            String?     @db.VarChar(255)
+  observation       String?     @db.VarChar(255)
+  status            String?     @db.VarChar(255)
+  provinceId        BigInt      @map("province_id")
+  province_ce       province_ce @relation(fields: [provinceId], references: [id_province], onDelete: NoAction, onUpdate: NoAction, map: "fkccbjfj868fde05vy8i6kqyy4n")
+  user_ce           user_ce[]
+}
+
+model cart_item {
+  id_cart_item     BigInt        @id @default(autoincrement())
+  price            Float
+  quantity         Int
+  product_id       BigInt
+  shopping_cart_id BigInt
+  shopping_cart    shopping_cart @relation(fields: [shopping_cart_id], references: [id_shopping_cart], onDelete: NoAction, onUpdate: NoAction, map: "fke89gjdx91fxnmkkssyoim8xfu")
+  product          product       @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkjcyd5wv4igqnw413rgxbfu4nv")
+}
+
+model comment_ce {
+  id_comment        BigInt    @id @default(autoincrement())
+  comentario        String?   @db.VarChar(255)
+  creation_date     DateTime? @db.Timestamp(6)
+  creation_user     String?   @db.VarChar(255)
+  modification_date DateTime? @db.Timestamp(6)
+  modification_user String?   @db.VarChar(255)
+  observation       String?   @db.VarChar(255)
+  rating            Int
+  status            String?   @db.VarChar(255)
+  product_id        BigInt
+  user_id           BigInt
+  product           product   @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk890uvttwi2ikpr3ingawiv5er")
+  user_ce           user_ce   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkj7u9fw1m5nvki4wje3u4xp8yt")
+}
+
+model inventory_ce {
+  id_inventory      BigInt    @id @default(autoincrement())
+  cantidad          Int
+  creation_date     DateTime? @db.Timestamp(6)
+  creation_user     String?   @db.VarChar(255)
+  modification_date DateTime? @db.Timestamp(6)
+  modification_user String?   @db.VarChar(255)
+  observation       String?   @db.VarChar(255)
+  status            String?   @db.VarChar(255)
+  producto_id       BigInt?
+  product           product?  @relation(fields: [producto_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkaegxmlmlbxx00uk4yiiw3bon5")
+}
+
+model message_ce {
+  id_message                                  BigInt    @id @default(autoincrement())
+  content                                     String?   @db.VarChar(255)
+  creation_date                               DateTime? @db.Timestamp(6)
+  creation_user                               String?   @db.VarChar(255)
+  modification_date                           DateTime? @db.Timestamp(6)
+  modification_user                           String?   @db.VarChar(255)
+  observation                                 String?   @db.VarChar(255)
+  shipping_date                               DateTime? @db.Timestamp(6)
+  status                                      String?   @db.VarChar(255)
+  destinatario_id                             BigInt?
+  remitente_id                                BigInt
+  user_ce_message_ce_destinatario_idTouser_ce user_ce?  @relation("message_ce_destinatario_idTouser_ce", fields: [destinatario_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkcowb9mhik3hra21ony696lc2j")
+  user_ce_message_ce_remitente_idTouser_ce    user_ce   @relation("message_ce_remitente_idTouser_ce", fields: [remitente_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkqw0f139swnqm41riil4d30tys")
+}
+
+model order_ce {
+  id_order          BigInt         @id @default(autoincrement())
+  creation_date     DateTime?      @db.Timestamp(6)
+  creation_user     String?        @db.VarChar(255)
+  modification_date DateTime?      @db.Timestamp(6)
+  modification_user String?        @db.VarChar(255)
+  observation       String?        @db.VarChar(255)
+  order_date        DateTime?      @db.Timestamp(6)
+  payment_method    String?        @db.VarChar(255)
+  paypal_payment_id String?        @db.VarChar(255)
+  status            String?        @db.VarChar(255)
+  total             Float
+  buyer_id          BigInt
+  user_ce           user_ce        @relation(fields: [buyer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk5615ygh96uhycaxxf7v61docr")
+  order_detail      order_detail[]
+}
+
+model order_detail {
+  id_order_detail   BigInt    @id @default(autoincrement())
+  creation_date     DateTime? @db.Timestamp(6)
+  creation_user     String?   @db.VarChar(255)
+  guia              String?
+  modification_date DateTime? @db.Timestamp(6)
+  modification_user String?   @db.VarChar(255)
+  observation       String?   @db.VarChar(255)
+  quantity          Int?
+  subtotal          Float?
+  unit_price        Float?
+  order_id          BigInt?
+  product_id        BigInt?
+  seller_id         BigInt?
+  product           product?  @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkb8bg2bkty0oksa3wiq5mp5qnc")
+  user_ce           user_ce?  @relation(fields: [seller_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkqtp5mijhv0wh8c02j69xhpy9q")
+  order_ce          order_ce? @relation(fields: [order_id], references: [id_order], onDelete: NoAction, onUpdate: NoAction, map: "fktrbelsls34mclih6jqmd58yio")
+}
+
+model pais_ce {
+  id_pais           BigInt    @id @default(autoincrement())
+  creation_date     DateTime? @db.Timestamp(6)
+  creation_user     String?   @db.VarChar(255)
+  modification_date DateTime? @db.Timestamp(6)
+  modification_user String?   @db.VarChar(255)
+  name              String?   @db.VarChar(255)
+  observation       String?   @db.VarChar(255)
+  status            String?   @db.VarChar(255)
+  user_ce           user_ce[]
+}
+
+model predefined_product {
+  id                BigInt           @id @default(autoincrement()) @map("id_predefined_product")
+  creation_date     DateTime?        @db.Timestamp(6)
+  creation_user     String?          @db.VarChar(255)
+  modification_date DateTime?        @db.Timestamp(6)
+  modification_user String?          @db.VarChar(255)
+  name              String?          @db.VarChar(255)
+  observation       String?          @db.VarChar(255)
+  status            String?          @db.VarChar(255)
+  category_id       BigInt
+  category          product_category @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkka69txquqjfcwaj8e12o77hod")
+  product           product[]
+}
+
+model product {
+  id                  BigInt             @id @default(autoincrement()) @map("id_product")
+  creation_date       DateTime?          @db.Timestamp(6)
+  creation_user       String?            @db.VarChar(255)
+  description         String?            @db.VarChar(255)
+  image               String?
+  modification_date   DateTime?          @db.Timestamp(6)
+  modification_user   String?            @db.VarChar(255)
+  price               Float
+  status              String?            @db.VarChar(255)
+  stock               Int
+  predefinedProductId BigInt             @map("predefined_product_id")
+  seller_id           BigInt
+  unitOfMeasureId     BigInt             @map("unit_of_measure_id")
+  cart_item           cart_item[]
+  comment_ce          comment_ce[]
+  inventory_ce        inventory_ce[]
+  order_detail        order_detail[]
+  unitOfMeasure       unit_of_measure    @relation(fields: [unitOfMeasureId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk6fgxdc9vsscckaq27yi5h31ni")
+  user_ce             user_ce            @relation(fields: [seller_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk82lof3v9dmjvn85f5q7t6faqy")
+  predefinedProduct   predefined_product @relation(fields: [predefinedProductId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkay92br6je682bx1q56v5w7tge")
+}
+
+model product_category {
+  id                 BigInt               @id @default(autoincrement()) @map("id_product_category")
+  creation_date      DateTime?            @db.Timestamp(6)
+  creation_user      String?              @db.VarChar(255)
+  description        String?              @db.VarChar(255)
+  modification_date  DateTime?            @db.Timestamp(6)
+  modification_user  String?              @db.VarChar(255)
+  name               String?              @db.VarChar(255)
+  observation        String?              @db.VarChar(255)
+  status             String?              @default("Activo") @db.VarChar(255)
+  predefined_product predefined_product[]
+}
+
+model province_ce {
+  id_province       BigInt      @id @default(autoincrement())
+  creation_date     DateTime?   @db.Timestamp(6)
+  creation_user     String?     @db.VarChar(255)
+  modification_date DateTime?   @db.Timestamp(6)
+  modification_user String?     @db.VarChar(255)
+  name              String?     @db.VarChar(255)
+  observation       String?     @db.VarChar(255)
+  status            String?     @db.VarChar(255)
+  canton_ce         canton_ce[]
+}
+
+model role_ce {
+  id_role           BigInt      @id @default(autoincrement())
+  creation_date     DateTime?   @db.Timestamp(6)
+  creation_user     String?     @db.VarChar(255)
+  modification_date DateTime?   @db.Timestamp(6)
+  modification_user String?     @db.VarChar(255)
+  name              String?     @db.VarChar(255)
+  observation       String?     @db.VarChar(255)
+  status            String?     @db.VarChar(255)
+  user_role         user_role[]
+}
+
+model shopping_cart {
+  id_shopping_cart  BigInt      @id @default(autoincrement())
+  creation_date     DateTime?   @db.Timestamp(6)
+  creation_user     String?     @db.VarChar(255)
+  modification_date DateTime?   @db.Timestamp(6)
+  modification_user String?     @db.VarChar(255)
+  observation       String?     @db.VarChar(255)
+  status            String?     @db.VarChar(255)
+  total             Float
+  user_id           BigInt
+  cart_item         cart_item[]
+  user_ce           user_ce     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkdf818y2ko5m7nfxqglbhurr71")
+}
+
+model unit_of_measure {
+  id                BigInt    @id @default(autoincrement()) @map("id_unit_of_measure")
+  abreviature       String?   @db.VarChar(255)
+  creation_date     DateTime? @db.Timestamp(6)
+  creation_user     String?   @db.VarChar(255)
+  modification_date DateTime? @db.Timestamp(6)
+  modification_user String?   @db.VarChar(255)
+  name              String?   @db.VarChar(255)
+  status            String?   @default("Activo") @db.VarChar(255)
+  product           product[]
+}
+
+model user_ce {
+  id                                             BigInt          @id @default(autoincrement()) @map("id_user")
+  address                                        String?         @db.VarChar(255)
+  creation_date                                  DateTime?       @default(now()) @db.Timestamp(6)
+  creation_user                                  String?         @db.VarChar(255)
+  disabled                                       Boolean?        @default(false)
+  email                                          String?         @unique @db.VarChar(255)
+  lastName                                       String?         @map("last_name") @db.VarChar(255)
+  locked                                         Boolean?        @default(false)
+  modification_date                              DateTime?       @db.Timestamp(6)
+  modification_user                              String?         @db.VarChar(255)
+  name                                           String?         @db.VarChar(255)
+  observation                                    String?         @db.VarChar(255)
+  password                                       String?         @db.VarChar(255)
+  paypalEmail                                    String?         @map("paypal_email") @db.VarChar(255)
+  phone                                          String?         @db.VarChar(255)
+  status                                         String?         @default("Activo") @db.VarChar(255)
+  cantonId                                       BigInt?         @map("canton_id")
+  paisId                                         BigInt          @map("pais_id")
+  userId                                         BigInt?         @map("user_id")
+  comment_ce                                     comment_ce[]
+  message_ce_message_ce_destinatario_idTouser_ce message_ce[]    @relation("message_ce_destinatario_idTouser_ce")
+  message_ce_message_ce_remitente_idTouser_ce    message_ce[]    @relation("message_ce_remitente_idTouser_ce")
+  order_ce                                       order_ce[]
+  order_detail                                   order_detail[]
+  product                                        product[]
+  shopping_cart                                  shopping_cart[]
+  canton_ce                                      canton_ce?      @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk395iojpxiq0lla330rmp7ptt3")
+  pais_ce                                        pais_ce         @relation(fields: [paisId], references: [id_pais], onDelete: NoAction, onUpdate: NoAction, map: "fkcft99y1rb8pwg435besokbpbg")
+  user_ce                                        user_ce?        @relation("user_ceTouser_ce", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkr4evuooe10i4nrp0yqxhcor8s")
+  other_user_ce                                  user_ce[]       @relation("user_ceTouser_ce")
+  user_role                                      user_role[]
+}
+
+model user_role {
+  id      BigInt   @id @default(autoincrement())
+  roleId  BigInt?  @map("role_id")
+  userId  BigInt?  @map("user_id")
+  user_ce user_ce? @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk3fl1jh1bo1pwjeouerc2ajvi5")
+  role_ce role_ce? @relation(fields: [roleId], references: [id_role], onDelete: NoAction, onUpdate: NoAction, map: "fk94k0hj897tea8a6493lgux5w")
+}
