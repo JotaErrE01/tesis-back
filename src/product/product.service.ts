@@ -12,7 +12,9 @@ export class ProductService {
     this.product = prismaService.product;
   }
 
-  create(createProductDto: CreateProductDto) {
+  create(createProductDto: CreateProductDto, file?: Express.Multer.File) {
+    // create image first
+
     return this.product.create({
       data: {
         description: createProductDto.description,
