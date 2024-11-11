@@ -177,7 +177,11 @@ function extendPrismaClient() {
     query: {
       $allModels: {
         $allOperations: async ({ args, query }) => {
-          // const start = performance.now();
+          // const now = await prisma.$queryRaw`select now() as now`;
+          // const timezone = await prisma.$queryRaw`SHOW timezone;`;
+          // console.log('this is now => ', { now });
+          // console.log('this is timezone => ', { timezone });
+
           const result = await query(args);
           return serializeData(result);
         }

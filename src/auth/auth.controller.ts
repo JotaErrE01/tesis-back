@@ -28,21 +28,25 @@ export class AuthController {
   }
 
   @Get()
+  @Auth()
   findAll() {
     return this.authService.findAll();
   }
 
   @Get(':id')
+  @Auth()
   findOne(@Param('id') id: string) {
     return this.authService.findOne(+id);
   }
 
   @Patch(':id')
+  @Auth()
   update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
     return this.authService.update(+id, updateAuthDto);
   }
 
   @Delete(':id')
+  @Auth()
   remove(@Param('id') id: string) {
     return this.authService.remove(+id);
   }

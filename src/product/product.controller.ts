@@ -6,8 +6,8 @@ import { PaginationDTO } from '../common/dtos/pagination.dto';
 import { Auth } from 'src/auth/decorators';
 import { Role } from 'src/auth/enums/roles.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
-import multer, { diskStorage } from 'multer';
-import { fileNamer, fileFilter } from 'src/common/helpers';
+import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { Prisma } from '@prisma/client';
 
 @Controller('products')
 export class ProductController {
@@ -15,38 +15,21 @@ export class ProductController {
 
   @Post()
   @Auth(Role.Admin)
-  @UseInterceptors(FileInterceptor('file', {
-    // fileFilter: console.log
-    // fileFilter(req, file, callback) {
-    //   return fileFilter({ req, file, callback });
-    // },
-    // storage: diskStorage({
-    //   destination: './static/products',
-    //   filename: fileNamer,
-    // })
-  }))
+  @UseInterceptors(FileInterceptor('file'))
   create(
     @Body() createProductDto: CreateProductDto,
+    @GetUser() user: Prisma.user_ceGetPayload<{ include: { user_role: true } }>,
     @UploadedFile(
       new ParseFilePipe({
+        fileIsRequired: false,
         validators: [
-          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 10 }),
-          // new FileTypeValidator({ fileType: 'image/jpeg' }),
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 10, message: 'File is too big' }),
+          new FileTypeValidator({ fileType: /^(image\/(jpeg|jpg|png|webp))$/ }),
         ],
       })
-    ) file: Express.Multer.File
+    ) file?: Express.Multer.File | undefined
   ) {
-    console.log(file.size, file);
-
-    // multer({
-    //   storage: diskStorage({
-    //     destination: './static/products',
-    //     filename: fileNamer,
-    //   })
-    // });
-
-    return createProductDto;
-    return this.productService.create(createProductDto, file);
+    return this.productService.create(createProductDto, user, file);
   }
 
   @Get()
@@ -62,8 +45,23 @@ export class ProductController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productService.update(+id, updateProductDto);
+  @Auth(Role.Admin)
+  @UseInterceptors(FileInterceptor('file'))
+  update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+    @GetUser() user: Prisma.user_ceGetPayload<{ include: { user_role: true } }>,
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: false,
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 10, message: 'File is too big' }),
+          new FileTypeValidator({ fileType: /^(image\/(jpeg|jpg|png|webp))$/ }),
+        ],
+      })
+    ) file?: Express.Multer.File | undefined
+  ) {
+    return this.productService.update(+id, updateProductDto, user, file);
   }
 
   @Delete(':id')

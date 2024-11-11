@@ -3,7 +3,7 @@ import { IsInt, IsNumber, IsOptional, IsPositive, IsString, Min, MinLength } fro
 
 export class CreateProductDto {
   @IsString()
-  @MinLength(4)
+  @MinLength(4, { message: 'La Descripción debe tener al menos 4 caracteres' })
   description: string;
 
   @IsNumber()
@@ -24,10 +24,10 @@ export class CreateProductDto {
   @IsOptional()
   status?: string;
 
-  @IsPositive()
-  @IsNumber()
-  @Transform(({ value }) => parseInt(value))
-  user: number;
+  // @IsPositive()
+  // @IsNumber()
+  // @Transform(({ value }) => parseInt(value))
+  // user: number;
 
   @IsPositive()
   @IsNumber()
@@ -39,8 +39,8 @@ export class CreateProductDto {
   @Transform(({ value }) => parseInt(value))
   unitOfMeasure: number;
 
-  @IsPositive()
-  @IsNumber()
-  @Transform(({ value }) => parseInt(value))
-  sellerId: number;
+  // @IsPositive()
+  // @IsNumber()
+  // @Transform(({ value }) => parseInt(value))
+  // sellerId: number;
 }

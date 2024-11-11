@@ -10,6 +10,7 @@ import { ProductModule } from './product/product.module';
 import { UnitOfMesureModule } from './unit-of-mesure/unit-of-mesure.module';
 import { ProductCategoryModule } from './product-category/product-category.module';
 import { PredefinedProductModule } from './predefined-product/predefined-product.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -60,6 +61,8 @@ import { PredefinedProductModule } from './predefined-product/predefined-product
     ProductCategoryModule,
 
     PredefinedProductModule,
+
+    FileModule,
   ],
   controllers: [],
   providers: [],
