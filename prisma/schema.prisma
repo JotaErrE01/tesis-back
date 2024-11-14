@@ -15,7 +15,7 @@ model canton_ce {
   modification_user String?     @db.VarChar(255)
   nombre            String?     @db.VarChar(255)
   observation       String?     @db.VarChar(255)
-  status            String?     @db.VarChar(255)
+  status            Status?     @default(Activo)
   provinceId        BigInt      @map("province_id")
   province_ce       province_ce @relation(fields: [provinceId], references: [id_province], onDelete: NoAction, onUpdate: NoAction, map: "fkccbjfj868fde05vy8i6kqyy4n")
   user_ce           user_ce[]
@@ -27,6 +27,7 @@ model cart_item {
   quantity         Int
   product_id       BigInt
   shopping_cart_id BigInt
+  status           Status?       @default(Activo)
   shopping_cart    shopping_cart @relation(fields: [shopping_cart_id], references: [id_shopping_cart], onDelete: NoAction, onUpdate: NoAction, map: "fke89gjdx91fxnmkkssyoim8xfu")
   product          product       @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkjcyd5wv4igqnw413rgxbfu4nv")
 }
@@ -40,7 +41,7 @@ model comment_ce {
   modification_user String?   @db.VarChar(255)
   observation       String?   @db.VarChar(255)
   rating            Int
-  status            String?   @db.VarChar(255)
+  status            Status?   @default(Activo)
   product_id        BigInt
   user_id           BigInt
   product           product   @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk890uvttwi2ikpr3ingawiv5er")
@@ -55,7 +56,7 @@ model inventory_ce {
   modification_date DateTime? @db.Timestamp(6)
   modification_user String?   @db.VarChar(255)
   observation       String?   @db.VarChar(255)
-  status            String?   @db.VarChar(255)
+  status            Status?   @default(Activo)
   producto_id       BigInt?
   product           product?  @relation(fields: [producto_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkaegxmlmlbxx00uk4yiiw3bon5")
 }
@@ -69,7 +70,7 @@ model message_ce {
   modification_user                           String?   @db.VarChar(255)
   observation                                 String?   @db.VarChar(255)
   shipping_date                               DateTime? @db.Timestamp(6)
-  status                                      String?   @db.VarChar(255)
+  status                                      Status?   @default(Activo)
   destinatario_id                             BigInt?
   remitente_id                                BigInt
   user_ce_message_ce_destinatario_idTouser_ce user_ce?  @relation("message_ce_destinatario_idTouser_ce", fields: [destinatario_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkcowb9mhik3hra21ony696lc2j")
@@ -86,7 +87,7 @@ model order_ce {
   order_date        DateTime?      @db.Timestamp(6)
   payment_method    String?        @db.VarChar(255)
   paypal_payment_id String?        @db.VarChar(255)
-  status            String?        @db.VarChar(255)
+  status            Status?        @default(Activo)
   total             Float
   buyer_id          BigInt
   user_ce           user_ce        @relation(fields: [buyer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk5615ygh96uhycaxxf7v61docr")
@@ -107,6 +108,7 @@ model order_detail {
   order_id          BigInt?
   product_id        BigInt?
   seller_id         BigInt?
+  status            Status?   @default(Activo)
   product           product?  @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkb8bg2bkty0oksa3wiq5mp5qnc")
   user_ce           user_ce?  @relation(fields: [seller_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkqtp5mijhv0wh8c02j69xhpy9q")
   order_ce          order_ce? @relation(fields: [order_id], references: [id_order], onDelete: NoAction, onUpdate: NoAction, map: "fktrbelsls34mclih6jqmd58yio")
@@ -120,7 +122,7 @@ model pais_ce {
   modification_user String?   @db.VarChar(255)
   name              String?   @db.VarChar(255)
   observation       String?   @db.VarChar(255)
-  status            String?   @db.VarChar(255)
+  status            Status?   @default(Activo)
   user_ce           user_ce[]
 }
 
@@ -132,7 +134,7 @@ model predefined_product {
   modification_user String?          @db.VarChar(255)
   name              String?          @db.VarChar(255)
   observation       String?          @db.VarChar(255)
-  status            String?          @db.VarChar(255)
+  status            Status?          @default(Activo)
   category_id       BigInt
   category          product_category @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkka69txquqjfcwaj8e12o77hod")
   product           product[]
@@ -147,7 +149,7 @@ model product {
   modification_date   DateTime?          @updatedAt @db.Timestamp(6)
   modification_user   String?            @db.VarChar(255)
   price               Float
-  status              String?            @default("Activo") @db.VarChar(255)
+  status              Status?            @default(Activo)
   stock               Int
   predefinedProductId BigInt             @map("predefined_product_id")
   seller_id           BigInt
@@ -170,7 +172,7 @@ model product_category {
   modification_user  String?              @db.VarChar(255)
   name               String?              @db.VarChar(255)
   observation        String?              @db.VarChar(255)
-  status             String?              @default("Activo") @db.VarChar(255)
+  status             Status?              @default(Activo)
   predefined_product predefined_product[]
 }
 
@@ -182,7 +184,7 @@ model province_ce {
   modification_user String?     @db.VarChar(255)
   name              String?     @db.VarChar(255)
   observation       String?     @db.VarChar(255)
-  status            String?     @db.VarChar(255)
+  status            Status?     @default(Activo)
   canton_ce         canton_ce[]
 }
 
@@ -194,7 +196,7 @@ model role_ce {
   modification_user String?     @db.VarChar(255)
   name              String?     @db.VarChar(255)
   observation       String?     @db.VarChar(255)
-  status            String?     @db.VarChar(255)
+  status            Status?     @default(Activo)
   user_role         user_role[]
 }
 
@@ -205,7 +207,7 @@ model shopping_cart {
   modification_date DateTime?   @db.Timestamp(6)
   modification_user String?     @db.VarChar(255)
   observation       String?     @db.VarChar(255)
-  status            String?     @db.VarChar(255)
+  status            Status?     @default(Activo)
   total             Float
   user_id           BigInt
   cart_item         cart_item[]
@@ -220,7 +222,7 @@ model unit_of_measure {
   modification_date DateTime? @db.Timestamp(6)
   modification_user String?   @db.VarChar(255)
   name              String?   @db.VarChar(255)
-  status            String?   @default("Activo") @db.VarChar(255)
+  status            Status?   @default(Activo)
   product           product[]
 }
 
@@ -240,7 +242,7 @@ model user_ce {
   password                                       String?         @db.VarChar(255)
   paypalEmail                                    String?         @map("paypal_email") @db.VarChar(255)
   phone                                          String?         @db.VarChar(255)
-  status                                         String?         @default("Activo") @db.VarChar(255)
+  status                                         Status?         @default(Activo)
   cantonId                                       BigInt?         @map("canton_id")
   paisId                                         BigInt          @map("pais_id")
   userId                                         BigInt?         @map("user_id")
@@ -251,7 +253,7 @@ model user_ce {
   order_detail                                   order_detail[]
   product                                        product[]
   shopping_cart                                  shopping_cart[]
-  canton_ce                                      canton_ce?      @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk395iojpxiq0lla330rmp7ptt3")
+  canton_ce                                      canton_ce?      @relation(fields: [cantonId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk395iojpxiq0lla330rmp7ptt3")
   pais_ce                                        pais_ce         @relation(fields: [paisId], references: [id_pais], onDelete: NoAction, onUpdate: NoAction, map: "fkcft99y1rb8pwg435besokbpbg")
   user_ce                                        user_ce?        @relation("user_ceTouser_ce", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkr4evuooe10i4nrp0yqxhcor8s")
   other_user_ce                                  user_ce[]       @relation("user_ceTouser_ce")
@@ -264,4 +266,9 @@ model user_role {
   userId  BigInt?  @map("user_id")
   user_ce user_ce? @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk3fl1jh1bo1pwjeouerc2ajvi5")
   role_ce role_ce? @relation(fields: [roleId], references: [id_role], onDelete: NoAction, onUpdate: NoAction, map: "fk94k0hj897tea8a6493lgux5w")
+}
+
+enum Status {
+  Activo
+  Eliminado
 }

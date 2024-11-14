@@ -68,16 +68,28 @@ export class AuthService {
     return token;
   }
 
-  async findAll() {
+  async findAll(currentUser: UserToken) {
+
     const users = await this.user.findMany({
+      where: { id: { not: currentUser.id } },
       include: {
         user_role: {
           select: {
             roleId: true,
+          },
+        },
+        canton_ce: {
+          include: {
+            province_ce: true,
           }
         }
+      },
+      orderBy: {
+        creation_date: 'desc',
       }
     });
+
+    users.forEach(user => delete user.password);
 
     return users;
   }
@@ -116,11 +128,24 @@ export class AuthService {
     return user;
   }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
+  async update(id: number, updateAuthDto: UpdateAuthDto) {
+    const oldUser = await this.findById(id);
+    return this.user.update({
+      where: { id },
+      data: {
+        name: updateAuthDto.name ?? oldUser.name,
+        lastName: updateAuthDto.lastName ?? oldUser.lastName,
+        phone: updateAuthDto.phone ?? oldUser.phone,
+        paypalEmail: updateAuthDto.paypalEmail ?? oldUser.paypalEmail,
+        address: updateAuthDto.address ?? oldUser.address,
+        pais_ce: { connect: { id_pais: updateAuthDto.paisId ?? oldUser.paisId, } },
+        canton_ce: { connect: { id: updateAuthDto.cantonId ?? oldUser.cantonId, } },
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  async remove(id: number) {
+    const user = await this.findById(id);
+    return this.user.softDelete({ where: { id: user.id } });
   }
 }

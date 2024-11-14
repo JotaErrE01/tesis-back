@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class CreateUserDto {
@@ -27,15 +28,18 @@ export class CreateUserDto {
 
   @IsNumber()
   @IsPositive()
+  @Transform(({ value }) => parseInt(value))
   paisId: number;
 
   @IsNumber()
   @IsPositive()
+  @Transform(({ value }) => parseInt(value))
   cantonId: number;
 
   @IsNumber()
   @IsPositive()
   @IsOptional()
+  @Transform(({ value }) => parseInt(value))
   userId?: number;
 
   @IsString()
@@ -44,5 +48,6 @@ export class CreateUserDto {
 
   @IsNumber()
   @IsPositive()
+  @Transform(({ value }) => parseInt(value))
   roleId: number;
 }

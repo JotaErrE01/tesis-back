@@ -35,7 +35,6 @@ export class ProductService {
         price: createProductDto.price,
         stock: createProductDto.stock,
         image: fileName,
-        status: createProductDto.status,
         creation_user: user.name,
         modification_user: user.name,
         unitOfMeasure: { connect: { id: createProductDto.unitOfMeasure } },

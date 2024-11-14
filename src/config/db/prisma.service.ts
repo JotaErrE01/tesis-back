@@ -1,5 +1,5 @@
 import { Injectable, OnModuleInit, Logger, OnModuleDestroy, INestApplication } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient, Status } from '@prisma/client';
 
 const INGNORED_FIELDS = ['creation_date', 'modification_date', 'creation_user', 'modification_user', 'observation'];
 
@@ -102,76 +102,24 @@ function extendPrismaClient() {
         });
       }
     },
-    // query: {
-    //   $allModels: {
-    //     findFirst({ args, query }) {
-    //       args.where = {
-    //         ...args.where,
-    //         isDeleted: false
-    //       };
-
-    //       return query(args);
-    //     },
-    //     findMany({ args, query }) {
-    //       args.where = {
-    //         ...args.where,
-    //         isDeleted: false
-    //       };
-
-    //       return query(args);
-    //     },
-    //     findFirstOrThrow({ args, query }) {
-    //       args.where = {
-    //         ...args.where,
-    //         isDeleted: false
-    //       };
-
-    //       return query(args);
-    //     },
-    //     findUnique({ args, query }) {
-    //       args.where = {
-    //         ...args.where,
-    //         isDeleted: false
-    //       };
-
-    //       return query(args);
-    //     },
-    //     findUniqueOrThrow({ args, query }) {
-    //       args.where = {
-    //         ...args.where,
-    //         isDeleted: false
-    //       };
-
-    //       return query(args);
-    //     },
-    //     async $allOperations({ operation, model, args, query }) {
-    //       const start = performance.now();
-    //       const result = await query(args);
-    //       const end = performance.now();
-    //       const time = end - start;
-    //       logger.debug(`${model}.${operation} took ${time}ms`);
-    //       return result;
-    //     },
-    //   }
-    // },
 
     // custom method for prisma
     model: {
-      // $allModels: {
-      //   async softDelete<T>(
-      //     this: T,
-      //     { where }: { where: Prisma.Args<T, 'findFirst'>['where'] }
-      //   ): Promise<boolean> {
-      //     // Get the current model at runtime
-      //     const context = Prisma.getExtensionContext(this);
-      //     const result = await (context as any).update({
-      //       where,
-      //       data: { isDeleted: true }
-      //     });
+      $allModels: {
+        async softDelete<T>(
+          this: T,
+          { where }: { where: Prisma.Args<T, 'findFirst'>['where'] }
+        ): Promise<boolean> {
+          // Get the current model at runtime
+          const context = Prisma.getExtensionContext(this);
+          const result = await (context as any).update({
+            where,
+            data: { status: Status.Eliminado }
+          });
 
-      //     return result;
-      //   },
-      // },
+          return result;
+        },
+      },
     },
 
     query: {
@@ -184,7 +132,55 @@ function extendPrismaClient() {
 
           const result = await query(args);
           return serializeData(result);
-        }
+        },
+        findFirst({ args, query }) {
+          args.where = {
+            ...args.where,
+            status: Status.Activo
+          };
+
+          return query(args);
+        },
+        findMany({ args, query }) {
+          args.where = {
+            ...args.where,
+            status: Status.Activo
+          };
+
+          return query(args);
+        },
+        findFirstOrThrow({ args, query }) {
+          args.where = {
+            ...args.where,
+            status: Status.Activo
+          };
+
+          return query(args);
+        },
+        findUnique({ args, query }) {
+          args.where = {
+            ...args.where,
+            status: Status.Activo
+          };
+
+          return query(args);
+        },
+        findUniqueOrThrow({ args, query }) {
+          args.where = {
+            ...args.where,
+            status: Status.Activo
+          };
+
+          return query(args);
+        },
+        // async $allOperations({ operation, model, args, query }) {
+        //   const start = performance.now();
+        //   const result = await query(args);
+        //   const end = performance.now();
+        //   const time = end - start;
+        //   logger.debug(`${model}.${operation} took ${time}ms`);
+        //   return result;
+        // },
       }
     }
   });

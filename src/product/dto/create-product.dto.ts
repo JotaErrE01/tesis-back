@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsInt, IsNumber, IsOptional, IsPositive, IsString, Min, MinLength } from 'class-validator';
+import { IsInt, IsNumber, IsPositive, IsString, Min, MinLength } from 'class-validator';
 
 export class CreateProductDto {
   @IsString()
@@ -18,11 +18,6 @@ export class CreateProductDto {
 
   // @IsString()
   // image: string;
-
-  @IsString()
-  @MinLength(2)
-  @IsOptional()
-  status?: string;
 
   // @IsPositive()
   // @IsNumber()

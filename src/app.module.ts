@@ -11,6 +11,8 @@ import { UnitOfMesureModule } from './unit-of-mesure/unit-of-mesure.module';
 import { ProductCategoryModule } from './product-category/product-category.module';
 import { PredefinedProductModule } from './predefined-product/predefined-product.module';
 import { FileModule } from './file/file.module';
+import { CountryModule } from './country/country.module';
+import { ProvinceModule } from './province/province.module';
 
 @Module({
   imports: [
@@ -63,6 +65,10 @@ import { FileModule } from './file/file.module';
     PredefinedProductModule,
 
     FileModule,
+
+    CountryModule,
+
+    ProvinceModule,
   ],
   controllers: [],
   providers: [],
