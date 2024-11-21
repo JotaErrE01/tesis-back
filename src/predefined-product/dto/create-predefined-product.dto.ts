@@ -7,6 +7,6 @@ export class CreatePredefinedProductDto {
 
   @IsNumber()
   @IsPositive()
-  categoryId: number;
+  category_id: number;
 }
 

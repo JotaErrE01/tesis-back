@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductCategoryDto } from './dto/create-product-category.dto';
 import { UpdateProductCategoryDto } from './dto/update-product-category.dto';
 import { PrismaService } from 'src/config/db/prisma.service';
+import { Status } from '@prisma/client';
 
 @Injectable()
 export class ProductCategoryService {
@@ -18,7 +19,7 @@ export class ProductCategoryService {
   }
 
   findAll() {
-    return this.productCategory.findMany();
+    return this.productCategory.findMany({ where: { status: Status.Activo } });
   }
 
   findOne(id: number) {
@@ -28,21 +29,19 @@ export class ProductCategoryService {
   async update(id: number, updateProductCategoryDto: UpdateProductCategoryDto) {
     await this.getProductCategory(id);
     return this.productCategory.update({
-      where: { id },
+      where: { id, status: Status.Activo },
       data: updateProductCategoryDto,
     });
   }
 
   async remove(id: number) {
     await this.getProductCategory(id);
-    return this.productCategory.delete({
-      where: { id },
-    });
+    return this.productCategory.softDelete({ where: { id } });
   }
 
   private async getProductCategory(id: number) {
     const productCategory = await this.productCategory.findUnique({
-      where: { id },
+      where: { id, status: Status.Activo },
     });
 
     if (!productCategory) throw new NotFoundException(`ProductCategory with id ${id} not found`);

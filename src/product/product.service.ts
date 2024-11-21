@@ -5,7 +5,7 @@ import { PaginationDTO } from 'src/common/dtos/pagination.dto';
 import { PrismaService } from 'src/config/db/prisma.service';
 import { join } from 'path';
 import { existsSync, mkdirSync, unlinkSync, writeFileSync } from 'fs';
-import { Prisma } from '@prisma/client';
+import { Prisma, Status } from '@prisma/client';
 
 @Injectable()
 export class ProductService {
@@ -56,8 +56,20 @@ export class ProductService {
         },
         unitOfMeasure: true,
         user_ce: {
-          select: { name: true, email: true }
+          select: { name: true, email: true },
         },
+      },
+      where: {
+        AND: [
+          {
+            predefinedProduct: { category: { status: Status.Activo } },
+          },
+          {
+            predefinedProduct: { status: Status.Activo },
+            unitOfMeasure: { status: Status.Activo },
+            user_ce: { status: Status.Activo },
+          }
+        ]
       },
       orderBy: { creation_date: 'desc' },
     });
@@ -118,13 +130,14 @@ export class ProductService {
     });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: number) {
+    const product = await this.getProduct(id);
+    return this.product.softDelete({ where: { id: product.id } });
   }
 
   private async getProduct(id: number) {
     const product = await this.product.findUnique({
-      where: { id },
+      where: { id, status: Status.Activo },
       include: {
         predefinedProduct: {
           include: { category: true }

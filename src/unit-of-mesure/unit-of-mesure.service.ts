@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUnitOfMesureDto } from './dto/create-unit-of-mesure.dto';
 import { UpdateUnitOfMesureDto } from './dto/update-unit-of-mesure.dto';
 import { PrismaService } from 'src/config/db/prisma.service';
+import { Status } from '@prisma/client';
 
 @Injectable()
 export class UnitOfMesureService {
@@ -16,7 +17,7 @@ export class UnitOfMesureService {
   }
 
   findAll() {
-    return this.unitOfMesure.findMany();
+    return this.unitOfMesure.findMany({ where: { status: Status.Activo } });
   }
 
   findOne(id: number) {
@@ -34,15 +35,12 @@ export class UnitOfMesureService {
 
   async remove(id: number) {
     await this.getUnitOfMesure(id);
-
-    return this.unitOfMesure.delete({
-      where: { id },
-    });
+    return this.unitOfMesure.softDelete({ where: { id } });
   }
 
   private async getUnitOfMesure(id: number) {
     const unitOfMesure = await this.unitOfMesure.findUnique({
-      where: { id },
+      where: { id, status: Status.Activo },
     });
 
     if (!unitOfMesure) throw new NotFoundException(`UnitOfMesure with id ${id} not found`);

@@ -13,6 +13,8 @@ import { PredefinedProductModule } from './predefined-product/predefined-product
 import { FileModule } from './file/file.module';
 import { CountryModule } from './country/country.module';
 import { ProvinceModule } from './province/province.module';
+import { QuantityModule } from './quantity/quantity.module';
+import { CartModule } from './cart/cart.module';
 
 @Module({
   imports: [
@@ -69,6 +71,10 @@ import { ProvinceModule } from './province/province.module';
     CountryModule,
 
     ProvinceModule,
+
+    QuantityModule,
+
+    CartModule,
   ],
   controllers: [],
   providers: [],

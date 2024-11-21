@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreatePredefinedProductDto } from './dto/create-predefined-product.dto';
 import { UpdatePredefinedProductDto } from './dto/update-predefined-product.dto';
 import { PrismaService } from 'src/config/db/prisma.service';
+import { Status } from '@prisma/client';
 
 @Injectable()
 export class PredefinedProductService {
@@ -12,17 +13,17 @@ export class PredefinedProductService {
   }
 
   create(createPredefinedProductDto: CreatePredefinedProductDto) {
-    const { categoryId, ...rest } = createPredefinedProductDto;
+    const { category_id, ...rest } = createPredefinedProductDto;
     return this.predefinedProduct.create({
       data: {
         ...rest,
-        category: { connect: { id: categoryId } },
+        category: { connect: { id: category_id } },
       },
     });
   }
 
   findAll() {
-    return this.predefinedProduct.findMany();
+    return this.predefinedProduct.findMany({ include: { category: true }, where: { AND: { category: { status: Status.Activo } } } });
   }
 
   findOne(id: number) {
@@ -39,7 +40,7 @@ export class PredefinedProductService {
 
   async remove(id: number) {
     await this.getPredefinedProduct(id);
-    return this.predefinedProduct.delete({
+    return this.predefinedProduct.softDelete({
       where: { id },
     });
   }

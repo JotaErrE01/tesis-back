@@ -17,67 +17,22 @@ export const serializeData = <T>(data: any): T => {
   ));
 };
 
-//? NOTA: todos los servicios inyectados son singleton por defecto
-// @Injectable()
-// export class PrismaService extends PrismaClient implements OnModuleInit {
-//   private logger = new Logger();
+// function applyStatusFilterToIncludes(include) {
+//   const filteredInclude = { ...include };
 
-//   constructor() {
-//     super();
-
-//     this.$extends({
-//       query: {
-//         async $allOperations({ args, query, model, operation }) {
-//           const before = Date.now();
-//           const result = await query(args);
-//           const after = Date.now();
-
-//           console.log(`Query ${model}.${operation} took ${after - before}ms`);
-
-//           return result;
-//         },
-//       },
-//     });
+//   for (const key in filteredInclude) {
+//     if (typeof filteredInclude[key] === 'object') {
+//       filteredInclude[key] = {
+//         ...filteredInclude[key],
+//         where: {
+//           ...(filteredInclude[key].where || {}),
+//           status: Status.Activo
+//         }
+//       };
+//     }
 //   }
 
-//   onModuleInit() {
-//     // this.$connect();
-//     this.logger.log('Database is connected 💽');
-
-//     // prisma middleware for dates
-//     // this.$use(async (params, next) => {
-//     //   const before = Date.now();
-//     //   const result = await next(params);
-//     //   const after = Date.now();
-
-//     //   console.log(`Query ${params.model}.${params.action} took ${after - before}ms`);
-
-//     //   return result;
-//     // });
-//     // this.$extends({
-//     //   query: {
-//     //     async $allOperations({ args, query, model, operation }) {
-//     //       const before = Date.now();
-//     //       const result = await query(args);
-//     //       const after = Date.now();
-
-//     //       console.log(`Query ${model}.${operation} took ${after - before}ms`);
-
-//     //       return result;
-//     //     },
-//     //   },
-//     // });
-//   }
-
-//   // async enableShutdownHooks(app: INestApplication) {
-//   //   this.$on('beforeExit', async () => {
-//   //     await app.close();
-//   //   });
-//   // }
-
-//   async onModuleDestroy() {
-//     await this.$disconnect();
-//   }
+//   return filteredInclude;
 // }
 
 
@@ -125,12 +80,9 @@ function extendPrismaClient() {
     query: {
       $allModels: {
         $allOperations: async ({ args, query }) => {
-          // const now = await prisma.$queryRaw`select now() as now`;
-          // const timezone = await prisma.$queryRaw`SHOW timezone;`;
-          // console.log('this is now => ', { now });
-          // console.log('this is timezone => ', { timezone });
-
+          // Aplica el filtro a las relaciones incluidas.
           const result = await query(args);
+
           return serializeData(result);
         },
         findFirst({ args, query }) {

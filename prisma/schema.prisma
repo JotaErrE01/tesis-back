@@ -30,6 +30,8 @@ model cart_item {
   status           Status?       @default(Activo)
   shopping_cart    shopping_cart @relation(fields: [shopping_cart_id], references: [id_shopping_cart], onDelete: NoAction, onUpdate: NoAction, map: "fke89gjdx91fxnmkkssyoim8xfu")
   product          product       @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkjcyd5wv4igqnw413rgxbfu4nv")
+
+  // @@index([shopping_cart_id, product_id], name: "cart_item_product_id_shopping_cart_id")
 }
 
 model comment_ce {
@@ -209,7 +211,7 @@ model shopping_cart {
   observation       String?     @db.VarChar(255)
   status            Status?     @default(Activo)
   total             Float
-  user_id           BigInt
+  user_id           BigInt      @unique
   cart_item         cart_item[]
   user_ce           user_ce     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkdf818y2ko5m7nfxqglbhurr71")
 }

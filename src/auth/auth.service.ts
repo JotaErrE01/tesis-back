@@ -8,6 +8,7 @@ import { compareSync, hash } from 'bcrypt';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserToken } from './guards';
+import { Status } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -118,7 +119,7 @@ export class AuthService {
       where: { email: email },
       include: {
         user_role: {
-          include: { role_ce: true }
+          include: { role_ce: { where: { status: Status.Activo } } }
         }
       }
     });
