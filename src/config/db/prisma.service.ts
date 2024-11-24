@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit, Logger, OnModuleDestroy, INestApplication } from '@nestjs/common';
 import { Prisma, PrismaClient, Status } from '@prisma/client';
 
-const INGNORED_FIELDS = ['creation_date', 'modification_date', 'creation_user', 'modification_user', 'observation'];
+const INGNORED_FIELDS = ['modification_date', 'creation_user', 'modification_user', 'observation'];
 
 export const serializeData = <T>(data: any): T => {
   return JSON.parse(JSON.stringify(

@@ -102,7 +102,7 @@ export class ProductService {
       // remove old image
       if (oldProduct.image) {
         const oldFilePath = join(directoryPath, oldProduct.image);
-        unlinkSync(oldFilePath);
+        if (existsSync(oldFilePath)) unlinkSync(oldFilePath);
       }
 
       const getUuid = crypto.randomUUID.bind(crypto);

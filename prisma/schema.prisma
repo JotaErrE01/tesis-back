@@ -42,7 +42,7 @@ model comment_ce {
   modification_date DateTime? @db.Timestamp(6)
   modification_user String?   @db.VarChar(255)
   observation       String?   @db.VarChar(255)
-  rating            Int
+  rating            Int       @default(1)
   status            Status?   @default(Activo)
   product_id        BigInt
   user_id           BigInt
