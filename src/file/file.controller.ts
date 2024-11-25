@@ -11,8 +11,6 @@ export class FileController {
     @Res() res: Response,
     @Param('imageName') imageName: string
   ) {
-    console.log('file');
-
     const path = this.fileService.getStaticProductImage(imageName);
 
     res.sendFile(path);

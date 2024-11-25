@@ -14,8 +14,6 @@ export const fileFilter = (fileFilterHelperOpts: FileFilterHelper) => {
   if (!file) return callback(new Error('File is empty'), false);
 
   const fileExptension = file.mimetype.split('/')[1];
-  console.log('validExtensions');
-
   if (!validExtensions.includes(fileExptension)) return callback(null, false);
 
   console.log({ file, maxFileSize, size: file.size });
