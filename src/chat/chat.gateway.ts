@@ -22,10 +22,25 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // Escucha mensajes del cliente
   @SubscribeMessage('sendMessage')
   handleMessage(
-    @MessageBody() message: { sender: string; text: string },
-    @ConnectedSocket() client: Socket,
+    client: Socket, payload: { sender: string; text: string },
+    // @MessageBody() message: { sender: string; text: string },
+    // @ConnectedSocket() client: Socket,
   ): void {
+    console.log(payload);
+
     // Reenvía el mensaje a todos los clientes conectados
-    this.server.emit('receiveMessage', message);
+    this.server.emit('receiveMessage', payload);
+
+    // Envia el mensaje al cliente que envió el mensaje
+    client.emit('receiveMessage', payload);
+
+    // Envia el mensaje al cliente con el id especificado en el payload
+    this.server.to(payload.sender).emit('receiveMessage', payload);
+
+    // enviar a todos menos al cliente que envió el mensaje
+    this.server.except(client.id).emit('receiveMessage', payload);
+
+    // enviar a todos menos al cliente que envió el mensaje
+    client.broadcast.emit('receiveMessage', payload);
   }
 }
