@@ -20,6 +20,7 @@ import { JwtStrategy } from './strategies/jwt-strategy';
         signOptions: { expiresIn: '2h' }
       })
     }),
-  ]
+  ],
+  exports: [JwtModule, AuthService],
 })
 export class AuthModule { }

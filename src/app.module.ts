@@ -16,7 +16,6 @@ import { ProvinceModule } from './province/province.module';
 import { QuantityModule } from './quantity/quantity.module';
 import { CartModule } from './cart/cart.module';
 import { ChatModule } from './chat/chat.module';
-import { PruebaModule } from './prueba/prueba.module';
 
 @Module({
   imports: [
@@ -79,8 +78,6 @@ import { PruebaModule } from './prueba/prueba.module';
     CartModule,
 
     ChatModule,
-
-    PruebaModule,
   ],
   controllers: [],
   providers: [],

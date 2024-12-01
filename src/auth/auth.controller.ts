@@ -12,14 +12,19 @@ import { Role } from './enums/roles.enum';
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
-  @Post('register')
-  register(@Body() createUserDto: CreateUserDto) {
-    return this.authService.registerUser(createUserDto);
-  }
+  // @Post('register')
+  // register(@Body() createUserDto: CreateUserDto) {
+  //   return this.authService.registerUser(createUserDto);
+  // }
 
   @Post('create')
   @Auth(Role.Admin)
   createUser(@Body() createUserDto: CreateUserDto) {
+    return this.authService.createUser(createUserDto);
+  }
+
+  @Post(['signup', 'register'])
+  signup(@Body() createUserDto: CreateUserDto) {
     return this.authService.registerUser(createUserDto);
   }
 

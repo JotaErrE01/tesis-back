@@ -9,6 +9,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserToken } from './guards';
 import { Status } from '@prisma/client';
+import { Role } from './enums/roles.enum';
 
 @Injectable()
 export class AuthService {
@@ -22,13 +23,14 @@ export class AuthService {
     this.user = prisma.user_ce;
   }
 
-  async registerUser(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto) {
     const user = await this.user.findUnique({ where: { email: createUserDto.email } });
     if (user) throw new BadRequestException('Usuario ya existe');
 
     createUserDto.password = await hash(createUserDto.password, this.configService.get('PASSWORD_SALT'));
 
     return await this.user.create({
+      include: { user_role: { include: { role_ce: { where: { status: Status.Activo } } } } },
       data: {
         email: createUserDto.email,
         password: createUserDto.password,
@@ -40,9 +42,51 @@ export class AuthService {
         creation_user: 'system',
         pais_ce: { connect: { id_pais: createUserDto.paisId, } },
         canton_ce: { connect: { id: createUserDto.cantonId, } },
-        user_role: { create: { role_ce: { connect: { id_role: createUserDto.roleId } } } }
+        user_role: {
+          createMany: {
+            data: createUserDto.roles.map(roleId => ({ roleId }))
+          }
+        }
       },
     });
+  }
+
+  async registerUser(createUserDto: CreateUserDto) {
+    const user = await this.user.findUnique({ where: { email: createUserDto.email } });
+    if (user) throw new BadRequestException('Usuario ya existe');
+
+    createUserDto.password = await hash(createUserDto.password, this.configService.get('PASSWORD_SALT'));
+
+    const allowedRoles = [Role.Comprador, Role.Vendedor];
+
+    const newUser = await this.user.create({
+      include: { user_role: { include: { role_ce: { where: { status: Status.Activo } } } } },
+      data: {
+        email: createUserDto.email,
+        password: createUserDto.password,
+        name: createUserDto.name,
+        lastName: createUserDto.lastName,
+        phone: createUserDto.phone,
+        address: createUserDto.address,
+        creation_date: new Date(),
+        creation_user: 'system',
+        pais_ce: { connect: { id_pais: createUserDto.paisId, } },
+        canton_ce: { connect: { id: createUserDto.cantonId, } },
+        // user_role: { create: { role_ce: { connect: { id_role: createUserDto.roleId } } } }
+        user_role: {
+          createMany: {
+            data: allowedRoles.map(roleId => ({ roleId }))
+          }
+        }
+      },
+    });
+
+    delete newUser.password;
+
+    return {
+      ...newUser,
+      token: this.getJwtToken({ id: Number(newUser.id) })
+    };
   }
 
   async login(loginUserDto: LoginUserDto) {
@@ -95,11 +139,11 @@ export class AuthService {
     return users;
   }
 
-  findOne(id: number) {
+  // findOne(id: number) {
 
-  }
+  // }
 
-  private async findById(id: number) {
+  async findById(id: number) {
     const user = await this.user.findUnique({
       where: { id },
       include: {

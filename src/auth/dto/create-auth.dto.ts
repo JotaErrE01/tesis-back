@@ -1,5 +1,5 @@
-import { Transform } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength, MinLength } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { ArrayMinSize, ArrayNotEmpty, IsArray, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength, MinLength, ValidateNested } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -46,8 +46,9 @@ export class CreateUserDto {
   @IsEmail()
   paypalEmail: string;
 
-  @IsNumber()
-  @IsPositive()
-  @Transform(({ value }) => parseInt(value))
-  roleId: number;
+  @IsArray()
+  @ArrayNotEmpty()
+  @ArrayMinSize(1) // Optionally, enforce a minimum number of items
+  @IsNumber({}, { each: true })
+  roles: number[];
 }

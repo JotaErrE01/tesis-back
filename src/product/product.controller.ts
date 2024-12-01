@@ -14,7 +14,7 @@ export class ProductController {
   constructor(private readonly productService: ProductService) { }
 
   @Post()
-  @Auth(Role.Admin)
+  @Auth(Role.Admin, Role.Vendedor)
   @UseInterceptors(FileInterceptor('file'))
   create(
     @Body() createProductDto: CreateProductDto,
@@ -39,13 +39,21 @@ export class ProductController {
     return this.productService.findAll(paginationDto);
   }
 
+  @Get('seller/:id')
+  @Auth(Role.Admin, Role.Vendedor)
+  findAllBySeller(
+    @GetUser() user: Prisma.user_ceGetPayload<{ include: { user_role: true } }>
+  ) {
+    return this.productService.findAllProductsByUser(Number(user.id));
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productService.findOne(+id);
   }
 
   @Patch(':id')
-  @Auth(Role.Admin)
+  @Auth(Role.Admin, Role.Vendedor)
   @UseInterceptors(FileInterceptor('file'))
   update(
     @Param('id') id: string,
@@ -65,7 +73,8 @@ export class ProductController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productService.remove(+id);
+  @Auth(Role.Admin, Role.Vendedor)
+  remove(@Param('id') id: string, @GetUser() user: Prisma.user_ceGetPayload<{ include: { user_role: true } }>) {
+    return this.productService.remove(+id, user);
   }
 }

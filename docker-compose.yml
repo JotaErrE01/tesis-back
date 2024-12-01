@@ -9,6 +9,6 @@ services:
       POSTGRES_PASSWORD: ecomerce
       POSTGRES_DB: tesis-ecomerce
     ports:
-      - 5432:5432
-    volumes:
-      - ./docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - 5431:5432
+    # volumes:
+    #   - ./docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql

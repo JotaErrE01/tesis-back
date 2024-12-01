@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { PrismaService } from '../config/db/prisma.service';
 import { Status } from '@prisma/client';
@@ -60,8 +59,10 @@ export class CartService {
   //   });
   // }
 
-  findAll(userId: number) {
-    return this.cart.findFirst({ where: { user_id: userId }, include: { cart_item: { include: { product: true } } } });
+  async findAll(userId: number) {
+    const result = await this.cart.findFirst({ where: { user_id: userId }, include: { cart_item: { include: { product: true } } } });
+    if (!result) return { cart_item: [] };
+    return result;
   }
 
   // findOne(id: number) {
