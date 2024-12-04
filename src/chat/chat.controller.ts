@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { ConnectedSocket } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { ChatService } from './chat.service';
@@ -22,5 +22,15 @@ export class ChatController {
   ) {
     console.log({ client: client.id });
     return this.chatService.createChat(Number(user.id), body.emisorId);
+  }
+
+  @Get('messages/:receptorId')
+  @Auth()
+  sendMessage(
+    @ConnectedSocket() client: Socket,
+    @GetUser() user: Prisma.user_ceGetPayload<{ include: { user_role: true } }>,
+    @Param('receptorId', ParseIntPipe) receptorId: number,
+  ) {
+    return this.chatService.getChatMessages(client, { emisorId: Number(user.id), receptorId });
   }
 }

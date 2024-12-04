@@ -41,7 +41,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // @MessageBody() message: { sender: string; text: string },
     // @ConnectedSocket() client: Socket,
   ): void {
-    this.chatService.sendMessage(payload);
+    this.chatService.sendMessage(client, payload);
     // Reenvía el mensaje a todos los clientes conectados
     // this.server.emit('receiveMessage', payload);
 

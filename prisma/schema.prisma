@@ -267,7 +267,7 @@ model message_ce {
   id_message            BigInt      @id @default(autoincrement())
   text_message          String      @db.VarChar(255)
   creation_date         DateTime    @default(now()) @db.Timestamp(6)
-  creation_user         String?     @db.VarChar(255)
+  creation_user         BigInt
   modification_date     DateTime?   @db.Timestamp(6)
   modification_user     String?     @db.VarChar(255)
   observation           String?     @db.VarChar(255)
