@@ -4,8 +4,8 @@ import { Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { Auth } from 'src/auth/decorators';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
-import { Prisma } from '@prisma/client';
 import { CreateChatDto } from './dtos/create-chat.dto';
+import { UserToken } from 'src/auth/guards';
 
 @Controller('chat')
 export class ChatController {
@@ -17,7 +17,7 @@ export class ChatController {
   @Auth()
   createChat(
     @ConnectedSocket() client: Socket,
-    @GetUser() user: Prisma.user_ceGetPayload<{ include: { user_role: true } }>,
+    @GetUser() user: UserToken,
     @Body() body: CreateChatDto,
   ) {
     console.log({ client: client.id });
@@ -28,7 +28,7 @@ export class ChatController {
   @Auth()
   sendMessage(
     @ConnectedSocket() client: Socket,
-    @GetUser() user: Prisma.user_ceGetPayload<{ include: { user_role: true } }>,
+    @GetUser() user: UserToken,
     @Param('receptorId', ParseIntPipe) receptorId: number,
   ) {
     return this.chatService.getChatMessages(client, { emisorId: Number(user.id), receptorId });

@@ -50,7 +50,7 @@ export class ChatService {
 
   async registerWebSocketClient(wsClient: Socket, userId: number) {
     const user = await this.authService.findById(userId);
-
+    console.log({ wsId: wsClient.id });
     await this.user.update({
       where: { id: user.id },
       data: { isOnline: true },
@@ -135,6 +135,8 @@ export class ChatService {
   }
 
   async getChatMessages(client: Socket, { emisorId, receptorId }: { emisorId: number; receptorId: number }) {
+    console.log({ client: (client as any).id });
+
     const chatUser = await Promise.any([
       this.chatUser.findUniqueOrThrow({
         where: {
@@ -144,7 +146,7 @@ export class ChatService {
           },
           status: Status.Activo,
         },
-        include: { message_ce: true },
+        include: { message_ce: { orderBy: { creation_date: 'desc' } } },
       }),
       this.chatUser.findUniqueOrThrow({
         where: {

@@ -16,6 +16,7 @@ import { ProvinceModule } from './province/province.module';
 import { QuantityModule } from './quantity/quantity.module';
 import { CartModule } from './cart/cart.module';
 import { ChatModule } from './chat/chat.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -78,6 +79,8 @@ import { ChatModule } from './chat/chat.module';
     CartModule,
 
     ChatModule,
+
+    OrderModule,
   ],
   controllers: [],
   providers: [],
