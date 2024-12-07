@@ -17,6 +17,7 @@ import { QuantityModule } from './quantity/quantity.module';
 import { CartModule } from './cart/cart.module';
 import { ChatModule } from './chat/chat.module';
 import { OrderModule } from './order/order.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -81,6 +82,8 @@ import { OrderModule } from './order/order.module';
     ChatModule,
 
     OrderModule,
+
+    PaymentModule,
   ],
   controllers: [],
   providers: [],
