@@ -7,6 +7,7 @@ import { Auth } from './decorators';
 import { GetUser } from './decorators/get-user.decorator';
 import { UserToken } from './guards';
 import { Role } from './enums/roles.enum';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @Controller(['auth', 'users'])
 export class AuthController {
@@ -45,11 +46,11 @@ export class AuthController {
     return this.authService.findAll(user);
   }
 
-  // @Get(':id')
-  // @Auth()
-  // findOne(@Param('id') id: string) {
-  //   return this.authService.findOne(+id);
-  // }
+  @Post('update-password')
+  @Auth()
+  updatePassword(@GetUser() user, @Body() updatePasswordDto: UpdatePasswordDto) {
+    return this.authService.updatePassword(user, updatePasswordDto);
+  }
 
   @Patch(':id')
   @Auth(Role.Admin)

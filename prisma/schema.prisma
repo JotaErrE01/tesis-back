@@ -65,14 +65,14 @@ model inventory_ce {
 
 model order_ce {
   id_order          BigInt         @id @default(autoincrement())
-  creation_date     DateTime?      @db.Timestamp(6)
+  creation_date     DateTime?      @default(now()) @db.Timestamp(6)
   creation_user     String?        @db.VarChar(255)
   modification_date DateTime?      @db.Timestamp(6)
   modification_user String?        @db.VarChar(255)
   observation       String?        @db.VarChar(255)
   order_date        DateTime?      @db.Timestamp(6)
   payment_method    String?        @db.VarChar(255)
-  paypal_payment_id String?        @db.VarChar(255)
+  paypal_payment_id String?        @db.VarChar(255) @unique
   status            Status?        @default(Activo)
   total             Float
   buyer_id          BigInt
@@ -213,40 +213,40 @@ model unit_of_measure {
 }
 
 model user_ce {
-  id                    BigInt          @id @default(autoincrement()) @map("id_user")
-  address               String?         @db.VarChar(255)
-  creation_date         DateTime?       @default(now()) @db.Timestamp(6)
-  creation_user         String?         @db.VarChar(255)
-  disabled              Boolean?        @default(false)
-  email                 String?         @unique @db.VarChar(255)
-  lastName              String?         @map("last_name") @db.VarChar(255)
-  locked                Boolean?        @default(false)
-  modification_date     DateTime?       @db.Timestamp(6)
-  modification_user     String?         @db.VarChar(255)
-  name                  String?         @db.VarChar(255)
-  observation           String?         @db.VarChar(255)
-  password              String?         @db.VarChar(255)
-  paypalEmail           String?         @map("paypal_email") @db.VarChar(255)
-  phone                 String?         @db.VarChar(255)
-  status                Status?         @default(Activo)
-  cantonId              BigInt?         @map("canton_id")
-  paisId                BigInt          @map("pais_id")
-  userId                BigInt?         @map("user_id")
-  isOnline              Boolean?        @default(false)
+  id                    BigInt         @id @default(autoincrement()) @map("id_user")
+  address               String?        @db.VarChar(255)
+  creation_date         DateTime?      @default(now()) @db.Timestamp(6)
+  creation_user         String?        @db.VarChar(255)
+  disabled              Boolean?       @default(false)
+  email                 String?        @unique @db.VarChar(255)
+  lastName              String?        @map("last_name") @db.VarChar(255)
+  locked                Boolean?       @default(false)
+  modification_date     DateTime?      @db.Timestamp(6)
+  modification_user     String?        @db.VarChar(255)
+  name                  String?        @db.VarChar(255)
+  observation           String?        @db.VarChar(255)
+  password              String?        @db.VarChar(255)
+  paypalEmail           String?        @map("paypal_email") @db.VarChar(255)
+  phone                 String?        @db.VarChar(255)
+  status                Status?        @default(Activo)
+  cantonId              BigInt?        @map("canton_id")
+  paisId                BigInt         @map("pais_id")
+  userId                BigInt?        @map("user_id")
+  isOnline              Boolean?       @default(false)
   comment_ce            comment_ce[]
   // message_ce_message_ce_destinatario_idTouser_ce message_ce[]    @relation("message_ce_destinatario_idTouser_ce")
   // message_ce_message_ce_remitente_idTouser_ce    message_ce[]    @relation("message_ce_remitente_idTouser_ce")
   order_ce              order_ce[]
   order_detail          order_detail[]
   product               product[]
-  shopping_cart         shopping_cart[]
-  canton_ce             canton_ce?      @relation(fields: [cantonId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk395iojpxiq0lla330rmp7ptt3")
-  pais_ce               pais_ce         @relation(fields: [paisId], references: [id_pais], onDelete: NoAction, onUpdate: NoAction, map: "fkcft99y1rb8pwg435besokbpbg")
-  user_ce               user_ce?        @relation("user_ceTouser_ce", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkr4evuooe10i4nrp0yqxhcor8s")
-  other_user_ce         user_ce[]       @relation("user_ceTouser_ce")
+  shopping_cart         shopping_cart?
+  canton_ce             canton_ce?     @relation(fields: [cantonId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk395iojpxiq0lla330rmp7ptt3")
+  pais_ce               pais_ce        @relation(fields: [paisId], references: [id_pais], onDelete: NoAction, onUpdate: NoAction, map: "fkcft99y1rb8pwg435besokbpbg")
+  user_ce               user_ce?       @relation("user_ceTouser_ce", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkr4evuooe10i4nrp0yqxhcor8s")
+  other_user_ce         user_ce[]      @relation("user_ceTouser_ce")
   user_role             user_role[]
-  chat_users_emisores   chat_users[]    @relation("chat_users_emisor_id")
-  chat_users_receptores chat_users[]    @relation("chat_users_receptor_id")
+  chat_users_emisores   chat_users[]   @relation("chat_users_emisor_id")
+  chat_users_receptores chat_users[]   @relation("chat_users_receptor_id")
 }
 
 model chat_users {
@@ -258,7 +258,7 @@ model chat_users {
 
   message_ce message_ce[]
 
-  status                Status?         @default(Activo)
+  status Status? @default(Activo)
 
   @@id([emisor_id, receptor_id])
 }

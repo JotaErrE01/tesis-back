@@ -1,38 +1,43 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { OrderService } from './order.service';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { CreatePaymentOrderDto } from './dto/create-payment-order.dto';
 import { Auth } from 'src/auth/decorators';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { UserToken } from 'src/auth/guards';
+import { ApprovePaymentOrderDto } from './dto/approve-payment-order.dto';
 
-@Controller('order')
+@Controller()
+@Auth()
 export class OrderController {
-  constructor(private readonly orderService: OrderService) { }
+  constructor(private readonly paymentService: OrderService) { }
 
-  @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.orderService.create(createOrderDto);
+  @Post('/payment')
+  createPaymentOrder(@GetUser() user: UserToken, @Body() body: CreatePaymentOrderDto) {
+    return this.paymentService.createPaymentOrder(user, body.paypalClientId);
   }
 
-  @Get()
-  @Auth()
-  findAll(@GetUser() user: UserToken) {
-    return this.orderService.findAll(Number(user.id));
+  @Post('/payment/approve')
+  approvePaymentOrder(@GetUser() user: UserToken, @Body() body: ApprovePaymentOrderDto) {
+    return this.paymentService.approvePaymentOrder(user, body.paypalClientId, body.transactionId);
   }
 
-  @Get('detail/:id')
-  getOderDetailByOrderId(@Param('id') id: string) {
-    return this.orderService.getOderDetailByOrderId(+id);
+  @Get('/orders')
+  findAllUserOrders(@GetUser() user: UserToken) {
+    return this.paymentService.findAllUserOrders(Number(user.id));
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.orderService.update(+id, updateOrderDto);
+  @Get('/orders/details/:orderId')
+  findOne(@Param('orderId', ParseIntPipe) orderId: number) {
+    return this.paymentService.getOderDetailByOrderId(orderId);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.orderService.remove(+id);
+  @Get('/orders/sales')
+  findAllUserSales(@GetUser() user: UserToken) {
+    return this.paymentService.findAllUserSales(Number(user.id));
+  }
+
+  @Delete('/payment/:transactionId')
+  remove(@Param('transactionId') transactionId: string) {
+    return this.paymentService.removeOrder(transactionId);
   }
 }

@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserToken } from './guards';
 import { Status } from '@prisma/client';
 import { Role } from './enums/roles.enum';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -60,7 +61,7 @@ export class AuthService {
     const allowedRoles = [Role.Comprador, Role.Vendedor];
 
     const newUser = await this.user.create({
-      include: { user_role: { include: { role_ce: { where: { status: Status.Activo } } } } },
+      include: { user_role: { include: { role_ce: { where: { status: Status.Activo } } } }, pais_ce: true },
       data: {
         email: createUserDto.email,
         password: createUserDto.password,
@@ -139,10 +140,6 @@ export class AuthService {
     return users;
   }
 
-  // findOne(id: number) {
-
-  // }
-
   async findById(id: number) {
     const user = await this.user.findUnique({
       where: { id },
@@ -164,7 +161,8 @@ export class AuthService {
       include: {
         user_role: {
           include: { role_ce: { where: { status: Status.Activo } } }
-        }
+        },
+        pais_ce: true
       }
     });
 
@@ -188,6 +186,24 @@ export class AuthService {
       },
     });
   }
+
+  async updatePassword(user: UserToken, updateAuthDto: UpdatePasswordDto) {
+    const isValidPassword = compareSync(updateAuthDto.oldPassword, user.password);
+
+    if (!isValidPassword) throw new UnauthorizedException('Contraseña incorrecta');
+
+    const newPassword = await hash(updateAuthDto.password, this.configService.get('PASSWORD_SALT'));
+
+    await this.user.update({
+      where: { id: user.id },
+      data: {
+        password: newPassword,
+      }
+    });
+
+    return { message: 'Contraseña actualizada' };
+  }
+
 
   async remove(id: number) {
     const user = await this.findById(id);

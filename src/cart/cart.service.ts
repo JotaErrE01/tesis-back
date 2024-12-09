@@ -1,7 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { PrismaService } from '../config/db/prisma.service';
-import { Status } from '@prisma/client';
+import { Prisma, shopping_cart, Status } from '@prisma/client';
 
 @Injectable()
 export class CartService {
@@ -59,9 +59,9 @@ export class CartService {
   //   });
   // }
 
-  async findAll(userId: number) {
-    const result = await this.cart.findFirst({ where: { user_id: userId }, include: { cart_item: { include: { product: true } } } });
-    if (!result) return { cart_item: [] };
+  async getUserCart(userId: number) {
+    const result = await this.cart.findUnique({ where: { user_id: userId }, include: { cart_item: { include: { product: true } } } });
+    if (!result) throw new NotFoundException('No se encontro el pedido');
     return result;
   }
 
@@ -141,7 +141,8 @@ export class CartService {
     return await this.cart.update({ where: { id_shopping_cart: cart.id_shopping_cart }, include: { cart_item: { include: { product: true } } }, data: { total } });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} cart`;
+  async remove(id: number) {
+    await this.cartItem.deleteMany({ where: { shopping_cart_id: id } });
+    return this.cart.delete({ where: { id_shopping_cart: id, status: Status.Activo } });
   }
 }
