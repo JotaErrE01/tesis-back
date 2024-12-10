@@ -11,6 +11,7 @@ import { UserToken } from './guards';
 import { Status } from '@prisma/client';
 import { Role } from './enums/roles.enum';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { RegisterUserDto } from './dto/register-auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -52,7 +53,7 @@ export class AuthService {
     });
   }
 
-  async registerUser(createUserDto: CreateUserDto) {
+  async registerUser(createUserDto: RegisterUserDto) {
     const user = await this.user.findUnique({ where: { email: createUserDto.email } });
     if (user) throw new BadRequestException('Usuario ya existe');
 

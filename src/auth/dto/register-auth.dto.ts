@@ -1,7 +1,7 @@
 import { Transform } from 'class-transformer';
 import { ArrayMinSize, ArrayNotEmpty, IsArray, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength, MinLength } from 'class-validator';
 
-export class CreateUserDto {
+export class RegisterUserDto {
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -45,10 +45,4 @@ export class CreateUserDto {
   @IsString()
   @IsEmail()
   paypalEmail: string;
-
-  @IsArray()
-  @ArrayNotEmpty()
-  @ArrayMinSize(1) // Optionally, enforce a minimum number of items
-  @IsNumber({}, { each: true })
-  roles: number[];
 }

@@ -8,6 +8,7 @@ import { GetUser } from './decorators/get-user.decorator';
 import { UserToken } from './guards';
 import { Role } from './enums/roles.enum';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { RegisterUserDto } from './dto/register-auth.dto';
 
 @Controller(['auth', 'users'])
 export class AuthController {
@@ -25,7 +26,7 @@ export class AuthController {
   }
 
   @Post(['signup', 'register'])
-  signup(@Body() createUserDto: CreateUserDto) {
+  signup(@Body() createUserDto: RegisterUserDto) {
     return this.authService.registerUser(createUserDto);
   }
 
