@@ -8,10 +8,11 @@ import { compareSync, hash } from 'bcrypt';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserToken } from './guards';
-import { Status } from '@prisma/client';
+import { Status, UserType } from '@prisma/client';
 import { Role } from './enums/roles.enum';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { RegisterUserDto } from './dto/register-auth.dto';
+import { FilterUserDto } from './dto/filter-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -209,5 +210,35 @@ export class AuthService {
   async remove(id: number) {
     const user = await this.findById(id);
     return this.user.softDelete({ where: { id: user.id } });
+  }
+
+  findUsersByType(type: UserType, currentUserId: number, filterUserDto: FilterUserDto) {
+    if (!Object.values(UserType).includes(type)) throw new BadRequestException('Tipo de usuario no valido');
+
+    const { page = 1, size = 10, genericFilter } = filterUserDto;
+
+    return this.user.findMany({
+      select: { id: true, name: true, lastName: true, email: true, phone: true, address: true, pais_ce: true },
+      where: {
+        userType: type, id: { not: currentUserId },
+        ...(filterUserDto.name && { name: { contains: filterUserDto.name, mode: 'insensitive' } }),
+        ...(filterUserDto.email && { email: { contains: filterUserDto.email, mode: 'insensitive' } }),
+        ...(filterUserDto.phone && { phone: { contains: filterUserDto.phone, mode: 'insensitive' } }),
+        ...(filterUserDto.address && { address: { contains: filterUserDto.address, mode: 'insensitive' } }),
+        OR: [
+          { name: { contains: genericFilter, mode: 'insensitive' } },
+          { lastName: { contains: genericFilter, mode: 'insensitive' } },
+          { email: { contains: genericFilter, mode: 'insensitive' } },
+          { phone: { contains: genericFilter, mode: 'insensitive' } },
+          { address: { contains: genericFilter, mode: 'insensitive' } },
+          { pais_ce: { name: { contains: genericFilter, mode: 'insensitive' } } },
+        ]
+      },
+      skip: (page - 1) * size,
+      take: size,
+      orderBy: {
+        creation_date: 'desc',
+      }
+    });
   }
 }

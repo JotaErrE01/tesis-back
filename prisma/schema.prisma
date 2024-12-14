@@ -7,6 +7,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum EcommerceCode {
+  B2B
+  B2C
+  B2G
+  G2B
+  G2C
+  G2G
+  C2C
+  C2G
+}
+
+model ecommerce_model {
+  id_ecommerce_model Int           @id @default(autoincrement())
+  code               EcommerceCode
+  description        String?
+  status             Status?       @default(Activo)
+}
+
 model canton_ce {
   id                BigInt      @id @default(autoincrement()) @map("id_canton")
   creation_date     DateTime?   @db.Timestamp(6)
@@ -212,6 +230,18 @@ model unit_of_measure {
   product           product[]
 }
 
+enum UserType {
+  EMPRESA
+  GOBIERNO
+  CLIENTE
+}
+
+// model user_type {
+//   id_user_type Int      @id @default(autoincrement())
+//   name         UserType
+//   status       Status?  @default(Activo)
+// }
+
 model user_ce {
   id                    BigInt          @id @default(autoincrement()) @map("id_user")
   address               String?         @db.VarChar(255)
@@ -229,21 +259,18 @@ model user_ce {
   paypalEmail           String?         @map("paypal_email") @db.VarChar(255)
   phone                 String?         @db.VarChar(255)
   status                Status?         @default(Activo)
+  userType              UserType        @default(CLIENTE)
   cantonId              BigInt?         @map("canton_id")
   paisId                BigInt          @map("pais_id")
   userId                BigInt?         @map("user_id")
   isOnline              Boolean?        @default(false)
   comment_ce            comment_ce[]
-  // message_ce_message_ce_destinatario_idTouser_ce message_ce[]    @relation("message_ce_destinatario_idTouser_ce")
-  // message_ce_message_ce_remitente_idTouser_ce    message_ce[]    @relation("message_ce_remitente_idTouser_ce")
   order_ce              order_ce[]
   order_detail          order_detail[]
   product               product[]
   shopping_cart         shopping_cart?
   canton_ce             canton_ce?      @relation(fields: [cantonId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk395iojpxiq0lla330rmp7ptt3")
   pais_ce               pais_ce         @relation(fields: [paisId], references: [id_pais], onDelete: NoAction, onUpdate: NoAction, map: "fkcft99y1rb8pwg435besokbpbg")
-  // user_ce               user_ce?       @relation("user_ceTouser_ce", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkr4evuooe10i4nrp0yqxhcor8s")
-  // other_user_ce         user_ce[]      @relation("user_ceTouser_ce")
   user_role             user_role[]
   chat_users_emisores   chat_users[]    @relation("chat_users_emisor_id")
   chat_users_receptores chat_users[]    @relation("chat_users_receptor_id")

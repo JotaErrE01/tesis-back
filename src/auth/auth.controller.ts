@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
@@ -9,6 +9,9 @@ import { UserToken } from './guards';
 import { Role } from './enums/roles.enum';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { RegisterUserDto } from './dto/register-auth.dto';
+import { UserType } from '@prisma/client';
+import { ParseUpperCasePipe } from 'src/common/pipes/parse-upper-case.pipe';
+import { FilterUserDto } from './dto/filter-user.dto';
 
 @Controller(['auth', 'users'])
 export class AuthController {
@@ -39,6 +42,15 @@ export class AuthController {
   @Auth()
   refresh(@GetUser() user: UserToken) {
     return this.authService.checkToken(user);
+  }
+
+  @Get('getByType/:type')
+  getByType(
+    // @GetUser() user: UserToken,
+    @Param('type', ParseUpperCasePipe) type: UserType,
+    @Query() filterUserDto: FilterUserDto
+  ) {
+    return this.authService.findUsersByType(type, 1, filterUserDto);
   }
 
   @Get()
